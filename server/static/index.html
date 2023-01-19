@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test Stream</title>
+</head>
+<body>
+
+<div id="content"></div>
+<script type="text/javascript" type="module">
+    const API_URL = 'http://localhost:8080/stream'
+
+    const init = async () => {
+        const abortController = new AbortController()
+
+        const response = await fetch(API_URL, {
+            signal: abortController.signal
+        })
+
+        response.body
+            .pipeThrough(new TextDecoderStream())
+            .pipeTo(new WritableStream({
+                write(chunk) {
+                    console.log(chunk)
+                    document.querySelector('#content').innerHTML = chunk
+                }
+            }))
+    }
+
+    init()
+</script>
+</body>
+</html>

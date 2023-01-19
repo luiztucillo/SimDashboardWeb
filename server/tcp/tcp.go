@@ -50,13 +50,10 @@ func handleTcpConnection(conn net.Conn, c chan<- string) {
 		conn.Write([]byte("OK\n"))
 	}
 
-	for {
-		netData, err := bufio.NewReader(conn).ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	scanner := bufio.NewScanner(conn)
+	scanner.Split(bufio.ScanLines)
 
-		c <- netData
+	for scanner.Scan() {
+		c <- scanner.Text() + "\n"
 	}
 }
